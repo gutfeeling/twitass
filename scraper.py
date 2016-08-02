@@ -36,7 +36,6 @@ class AdvancedSearchScraper(object):
         query_dict = {"src" : "typd",
                       "q" : self.all_of_these_words,
                       "f" : "tweets",
-                      "vertical" : "default",
                       "include_available_features" : 1,
                       "include_entities" : 1,
                       "reset_error_state" : "false",
@@ -52,25 +51,27 @@ class AdvancedSearchScraper(object):
         #first-page
         self.driver.get(self.first_page_url())
         self.tweets+=self.get_tweets_from_html(self.driver.page_source)
-        self.driver.close()
+        self.driver.quit()
 
         #ajax
         if len(self.tweets)>0:
 
             newest_tweet_id = self.tweets[0]['tweet_id']
             oldest_tweet_id = self.tweets[-1]['tweet_id']
-            has_more_items = True
 
-            while len(self.tweets) < self.limit and has_more_items:
+            while len(self.tweets) < self.limit:
 
-                time.sleep(1)
+                time.sleep(5)
 
                 response = requests.get(self.ajax_call_url(oldest_tweet_id, newest_tweet_id),
                                         verify = False)
                 json_data = json.loads(response.text)
                 self.tweets+=self.get_tweets_from_html(json_data["items_html"])
+
+                if oldest_tweet_id == self.tweets[-1]['tweet_id']:
+                    break
+
                 oldest_tweet_id = self.tweets[-1]['tweet_id']
-                has_more_items = json_data["has_more_items"]
 
         return self.tweets
 
