@@ -52,7 +52,7 @@ cd twitass
 
 ## Define Environment Variables
 
-You need to define a environment variable CHROMEDRIVER_PATH and point it to the location of the chromedriver executable.
+You need to define a environment variable CHROMEDRIVER_PATH and point it to the location of the chromedriver executable. On UNIX based systems, use the following command.
 
 ```
 export CHROMEDRIVER_PATH = "/path/to/chromedriver"
