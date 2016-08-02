@@ -6,8 +6,8 @@ Scrapes tweets from the Twitter Advanced Search webpage - bypasses the 10 day li
 ## Clone the repo
 
 ```
-git clone https://github.com/gutfeeling/K2P2.git
-cd K2P2
+git clone https://github.com/gutfeeling/twitass.git
+cd twitass
 ```
 
 
@@ -35,9 +35,16 @@ cd K2P2
 
 3. Install the python modules
 
-  ```
-  pip install -r requirements.txt
-  ```
+  - If you want to use python 2
+
+    ```  
+    pip install -r requirements2.txt
+    ```
+  - If you want to use python 3
+
+    ```
+    pip install -r requirements3.txt
+    ```
 
 ### Then the non Python dependencies
 
@@ -61,7 +68,7 @@ the data of the corresponding tweet.
                   dir="ltr" href="https://t.co/VMv6NVveUT" el="nofollow" target="_blank" title="http://bit.ly/pyspark1">
                   <span class="tco-ellipsis"></span><span class="invisible">http://</span><span class="js-display-url">
                   bit.ly/pyspark1</span><span class="invisible"></span><span class="tco-ellipsis"><span class="invisible">
-                  \xc2\xa0</span></span></a> <a class="twitter-hashtag pretty-link js-nav" data-query-source="hashtag_click" 
+                  </span></span></a> <a class="twitter-hashtag pretty-link js-nav" data-query-source="hashtag_click" 
                   dir="ltr" href="/hashtag/DataScience?src=hash"><s>#</s><b>DataScience</b></a> <a class="twitter-hashtag 
                   pretty-link js-nav" data-query-source="hashtag_click" dir="ltr" href="/hashtag/BigData?src=hash"><s>#</s>
                   <b>BigData</b></a> <a class="twitter-hashtag pretty-link js-nav" data-query-source="hashtag_click" dir="ltr" 
@@ -69,16 +76,15 @@ the data of the corresponding tweet.
                   data-query-source="hashtag_click" dir="ltr" href="/hashtag/ApacheSpark?src=hash"><s>#</s><b>ApacheSpark</b></a> 
                   <a class="twitter-hashtag pretty-link js-nav" data-query-source="hashtag_click" dir="ltr" 
                   href="/hashtag/Python?src=hash"><s>#</s><b><strong>Python</strong></b></a></p>', 
-                  'author_name': u'Tony Ojeda', 
-                  'tweet_time': u'6:15 PM - 1 Aug 2016', 
-                  'tweet_timestamp': u'1470100508000', 
-                  'favorites': 0, 
-                  'author_href': u'/tonyojeda3', 
-                  'tweet_id': u'760282753795522560', 
-                  'author_handle': u'tonyojeda3', 
-                  'retweets': 0, 
-                  'author_id': u'45048508'}
-
+    'author_name': u'Tony Ojeda', 
+    'tweet_time': u'6:15 PM - 1 Aug 2016', 
+    'tweet_timestamp': u'1470100508000', 
+    'favorites': 0, 
+    'author_href': u'/tonyojeda3', 
+    'tweet_id': u'760282753795522560', 
+    'author_handle': u'tonyojeda3', 
+    'retweets': 0, 
+    'author_id': u'45048508'}
   ```
 
 
