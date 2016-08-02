@@ -54,9 +54,9 @@ cd twitass
 
 You need to define a environment variable CHROMEDRIVER_PATH and point it to the location of the chromedriver executable.
 
-    ```
-    export CHROMEDRIVER_PATH = "/path/to/chromedriver"
-    ```
+```
+export CHROMEDRIVER_PATH = "/path/to/chromedriver"
+```
 
 ## Start scraping
 
