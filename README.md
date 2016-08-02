@@ -54,14 +54,13 @@ Make sure to place the executable in your PATH.
 ## Start scraping
 
 Here is a basic example which searches for the word "python" in the Twitter Advance Search webpage and 
-returns the first 200 tweets in a Python list. Each element of the returned list is a dictionary that contains
-the data of the corresponding tweet. 
+returns the first 200 tweets.  
 
   ```python
   >>> from scraper import AdvancedSearchScraper
   >>> ass = AdvancedSearchScraper("python", 200)
-  >>> tweets = ass.scrape()
-  >>> tweets[0]
+  >>> tweets = ass.scrape()    # Returns the first 200 tweets in a list
+  >>> tweets[0]    # Each list element is a dict containing data of one tweet
   {'tweet_permalink': u'/tonyojeda3/status/760282753795522560', 
    'tweet_text': '<p class="TweetTextSize js-tweet-text tweet-text" data-aria-label-part="0" lang="en">Getting Started 
                   with Spark (in <strong>Python</strong>) <a class="twitter-timeline-link" data-expanded-url="http://bit.ly/pyspark1" 
