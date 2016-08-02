@@ -48,24 +48,18 @@ cd twitass
 
 ### Then the non Python dependencies
 
-4. Download Chromedriver from [this link](https://sites.google.com/a/chromium.org/chromedriver/downloads).
-
-## Define Environment Variables
-
-You need to define a environment variable CHROMEDRIVER_PATH and point it to the location of the chromedriver executable. On UNIX based systems, use the following command.
-
-```
-export CHROMEDRIVER_PATH = "/path/to/chromedriver"
-```
+4. Install PhantomJS, a headless WebKit. You can donwload it from [this link](http://phantomjs.org/download.html). 
+Make sure to place the executable in your PATH.
 
 ## Start scraping
 
-Here is a basic example which searches for the word "python" in the Twitter Advance Search webpage. We simulate scrolling the page 20 times.  
+Here is a basic example which searches for the word "python" in the Twitter Advance Search webpage and 
+returns the first 200 tweets.  
 
   ```python
   >>> from scraper import AdvancedSearchScraper
-  >>> ass = AdvancedSearchScraper("python", 20)
-  >>> tweets = ass.scrape()    # Scrolls 20 times and returns all the loaded tweets as a list
+  >>> ass = AdvancedSearchScraper("python", 200)
+  >>> tweets = ass.scrape()    # Returns the first 200 tweets in a list
   >>> tweets[0]    # Each list element is a dict containing data of one tweet
   {'tweet_permalink': u'/tonyojeda3/status/760282753795522560', 
    'tweet_text': '<p class="TweetTextSize js-tweet-text tweet-text" data-aria-label-part="0" lang="en">Getting Started 
