@@ -8,7 +8,7 @@ except ImportError:
     from urllib import urlencode
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString, Tag
 from selenium import webdriver
 
 warnings.filterwarnings('ignore')
@@ -91,7 +91,9 @@ class AdvancedSearchScraper(object):
                 "author_id" : tweet_soup["data-user-id"],
                 "author_href" : tweet_soup.find("a",{"class" : "account-group"})["href"],
                 "tweet_permalink" : tweet_soup["data-permalink-path"],
-                "tweet_text" : str(tweet_soup.find("p", {"class" : "tweet-text"})),
+                "tweet_text" : self.prettify_tweet_text_bs_element(
+                                   tweet_soup.find("p", {"class" : "tweet-text"})),
+                "tweet_language" : tweet_soup.find("p", {"class" : "tweet-text"})['lang'],
                 "tweet_time" : tweet_soup.find("a",{"class" : "tweet-timestamp"})["title"],
                 "tweet_timestamp" : tweet_soup.find(
                     "span",{"class" : "_timestamp"})["data-time-ms"],
@@ -104,3 +106,23 @@ class AdvancedSearchScraper(object):
                 }
             tweetlist.append(tweet_dict)
         return tweetlist
+
+    def prettify_tweet_text_bs_element(self, tweet_text_bs_element):
+        tweet_text = ''
+        for child in tweet_text_bs_element.children:
+            if isinstance(child, NavigableString):
+                tweet_text += str(child) + " "
+            elif isinstance(child, Tag):
+                try:
+                    tag_class = child['class'][0]
+                    if tag_class == "twitter-atreply":
+                        mention = ''.join([str(i.string) for i in child.contents])
+                        tweet_text += mention + " "
+                    elif tag_class == "twitter-hashtag":
+                        hashtag = ''.join([str(i.string) for i in child.contents])
+                        tweet_text += hashtag + " "
+                    elif tag_class == "twitter-timeline-link":
+                        tweet_text += child['href'] + " "
+                except:
+                    tweet_text += str(child.string) + " "
+        return " ".join(tweet_text.split())
