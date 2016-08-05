@@ -45,12 +45,7 @@ cd twitass
     ```
     pip install -r requirements3.txt
     ```
-
-### Then the non Python dependencies
-
-4. Install PhantomJS, a headless WebKit. You can donwload it from [this link](http://phantomjs.org/download.html). 
-Make sure to place the executable in your PATH.
-
+  
 ## Start scraping
 
 Here is a basic example which searches for the word "python" in the Twitter Advance Search webpage and 
