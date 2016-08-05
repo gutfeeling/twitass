@@ -9,7 +9,6 @@ except ImportError:
 
 import requests
 from bs4 import BeautifulSoup, NavigableString, Tag
-from selenium import webdriver
 
 warnings.filterwarnings('ignore')
 
@@ -17,7 +16,6 @@ class AdvancedSearchScraper(object):
 
     def __init__(self, all_of_these_words, limit = 100):
         self.all_of_these_words = all_of_these_words
-        self.driver = webdriver.PhantomJS()
         if limit:
             self.limit = limit
         else:
@@ -49,9 +47,8 @@ class AdvancedSearchScraper(object):
         self.tweets = []
 
         #first-page
-        self.driver.get(self.first_page_url())
-        self.tweets+=self.get_tweets_from_html(self.driver.page_source)
-        self.driver.quit()
+        response = requests.get(self.first_page_url(), verify = False)
+        self.tweets+=self.get_tweets_from_html(response.text)
 
         #ajax
         if len(self.tweets)>0:
@@ -84,27 +81,31 @@ class AdvancedSearchScraper(object):
         html_soup = BeautifulSoup(html_doc, "html.parser")
         tweet_soup_list = html_soup.find_all("div", {"class" : "original-tweet"})
         for tweet_soup in tweet_soup_list:
-            tweet_dict = {
-                "tweet_id" : tweet_soup["data-tweet-id"],
-                "author_name" : tweet_soup["data-name"],
-                "author_handle" : tweet_soup["data-screen-name"],
-                "author_id" : tweet_soup["data-user-id"],
-                "author_href" : tweet_soup.find("a",{"class" : "account-group"})["href"],
-                "tweet_permalink" : tweet_soup["data-permalink-path"],
-                "tweet_text" : self.prettify_tweet_text_bs_element(
-                                   tweet_soup.find("p", {"class" : "tweet-text"})),
-                "tweet_language" : tweet_soup.find("p", {"class" : "tweet-text"})['lang'],
-                "tweet_time" : tweet_soup.find("a",{"class" : "tweet-timestamp"})["title"],
-                "tweet_timestamp" : tweet_soup.find(
-                    "span",{"class" : "_timestamp"})["data-time-ms"],
-                "retweets" : int(tweet_soup.find(
-                    "span",{"class" : "ProfileTweet-action--retweet"}).find(
-                    "span", {"class" : "ProfileTweet-actionCount"})['data-tweet-stat-count']),
-                "favorites" : int(tweet_soup.find(
-                    "span",{"class" : "ProfileTweet-action--favorite"}).find(
-                    "span", {"class" : "ProfileTweet-actionCount"})['data-tweet-stat-count']),
-                }
-            tweetlist.append(tweet_dict)
+            try:
+                tweet_dict = {
+                    "tweet_id" : tweet_soup["data-tweet-id"],
+                    "author_name" : tweet_soup["data-name"],
+                    "author_handle" : tweet_soup["data-screen-name"],
+                    "author_id" : tweet_soup["data-user-id"],
+                    "author_href" : tweet_soup.find("a",{"class" : "account-group"})["href"],
+                    "tweet_permalink" : tweet_soup["data-permalink-path"],
+                    "tweet_text" : self.prettify_tweet_text_bs_element(
+                                       tweet_soup.find("p", {"class" : "tweet-text"})),
+                    "tweet_language" : tweet_soup.find("p", {"class" : "tweet-text"})['lang'],
+                    "tweet_time" : tweet_soup.find("a",{"class" : "tweet-timestamp"})["title"],
+                    "tweet_timestamp" : tweet_soup.find(
+                        "span",{"class" : "_timestamp"})["data-time-ms"],
+                    "retweets" : int(tweet_soup.find(
+                        "span",{"class" : "ProfileTweet-action--retweet"}).find(
+                        "span", {"class" : "ProfileTweet-actionCount"})['data-tweet-stat-count']),
+                    "favorites" : int(tweet_soup.find(
+                        "span",{"class" : "ProfileTweet-action--favorite"}).find(
+                        "span", {"class" : "ProfileTweet-actionCount"})['data-tweet-stat-count']),
+                    }
+                tweetlist.append(tweet_dict)
+            except Exception as e:
+                print("Error while extracting information from tweet.\n")
+                print(e)
         return tweetlist
 
     def prettify_tweet_text_bs_element(self, tweet_text_bs_element):
