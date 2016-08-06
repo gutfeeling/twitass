@@ -53,17 +53,8 @@ class AdvancedSearchScraper(object):
             self.limit = float("inf")
 
 
-    def first_page_params(self):
-        query_dict = {"q" : self.query,
-                      "src" : "typd",
-                      "f" : "tweets",
-                      }
-
-        return query_dict
-
     def ajax_call_params(self, oldest_tweet_id, newest_tweet_id):
-        query_dict = {"q" : self.query,
-                      "src" : "typd",
+        query_dict = {"src" : "typd",
                       "f" : "tweets",
                       "include_available_features" : 1,
                       "include_entities" : 1,
@@ -76,8 +67,12 @@ class AdvancedSearchScraper(object):
         self.tweets = []
 
         #first-page
-        response = requests.get("https://twitter.com/search",
-                                params = self.first_page_params(),
+
+        # if q is supplied in the params dictionary, requests replaces
+        # spaces by + . this results in an unexpected final url.
+        # this is the only way to form the correct url.
+        response = requests.get("https://twitter.com/search?q=%s" % self.query,
+                                params = {"src" : "typd", "f" : "tweets"},
                                 verify = False)
         self.tweets+=self.get_tweets_from_html(response.text)
 
@@ -89,12 +84,18 @@ class AdvancedSearchScraper(object):
 
             while len(self.tweets) < self.limit:
 
+                # rate limiting! 1 AJAX call in 5 seconds.
+
                 time.sleep(5)
 
-                response = requests.get("https://twitter.com/i/search/timeline",
-                                        params = self.ajax_call_params(
-                                            oldest_tweet_id, newest_tweet_id),
-                                        verify = False)
+                # if q is supplied in the params dictionary, requests replaces
+                # spaces by + . this results in an unexpected final url.
+                # this is the only way to form the correct url
+
+                response = requests.get(
+                    "https://twitter.com/i/search/timeline?q=%s" % self.query,
+                    params = self.ajax_call_params(oldest_tweet_id, newest_tweet_id),
+                    verify = False)
                 json_data = json.loads(response.text)
                 self.tweets+=self.get_tweets_from_html(json_data["items_html"])
 
