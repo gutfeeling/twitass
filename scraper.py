@@ -2,11 +2,6 @@ import time
 import json
 import warnings
 
-try:
-    from urllib.parse import urlencode
-except ImportError:
-    from urllib import urlencode
-
 import requests
 from bs4 import BeautifulSoup, NavigableString, Tag
 
@@ -21,16 +16,14 @@ class AdvancedSearchScraper(object):
         else:
             self.limit = float("inf")
 
-    def first_page_url(self):
+    def first_page_params(self):
         query_dict = {"src" : "typd",
                       "q" : self.all_of_these_words,
                       "f" : "tweets",
                       }
-        query_string = urlencode(query_dict)
-        url = "https://twitter.com/search?" + query_string
-        return url
+        return query_dict
 
-    def ajax_call_url(self, oldest_tweet_id, newest_tweet_id):
+    def ajax_call_params(self, oldest_tweet_id, newest_tweet_id):
         query_dict = {"src" : "typd",
                       "q" : self.all_of_these_words,
                       "f" : "tweets",
@@ -39,15 +32,15 @@ class AdvancedSearchScraper(object):
                       "reset_error_state" : "false",
                       "max_position" : "TWEET-%s-%s" %(oldest_tweet_id, newest_tweet_id),
                       }
-        query_string = urlencode(query_dict)
-        url = "https://twitter.com/i/search/timeline?" + query_string
-        return url
+        return query_dict
 
     def scrape(self):
         self.tweets = []
 
         #first-page
-        response = requests.get(self.first_page_url(), verify = False)
+        response = requests.get("https://twitter.com/search",
+                                params = self.first_page_params(),
+                                verify = False)
         self.tweets+=self.get_tweets_from_html(response.text)
 
         #ajax
@@ -60,7 +53,9 @@ class AdvancedSearchScraper(object):
 
                 time.sleep(5)
 
-                response = requests.get(self.ajax_call_url(oldest_tweet_id, newest_tweet_id),
+                response = requests.get("https://twitter.com/i/search/timeline",
+                                        params = self.ajax_call_params(
+                                            oldest_tweet_id, newest_tweet_id),
                                         verify = False)
                 json_data = json.loads(response.text)
                 self.tweets+=self.get_tweets_from_html(json_data["items_html"])
@@ -83,10 +78,10 @@ class AdvancedSearchScraper(object):
         for tweet_soup in tweet_soup_list:
             try:
                 tweet_dict = {
-                    "tweet_id" : tweet_soup["data-tweet-id"],
+                    "tweet_id" : int(tweet_soup["data-tweet-id"]),
                     "author_name" : tweet_soup["data-name"],
                     "author_handle" : tweet_soup["data-screen-name"],
-                    "author_id" : tweet_soup["data-user-id"],
+                    "author_id" : int(tweet_soup["data-user-id"]),
                     "author_href" : tweet_soup.find("a",{"class" : "account-group"})["href"],
                     "tweet_permalink" : tweet_soup["data-permalink-path"],
                     "tweet_text" : self.prettify_tweet_text_bs_element(
@@ -112,18 +107,20 @@ class AdvancedSearchScraper(object):
         tweet_text = ''
         for child in tweet_text_bs_element.children:
             if isinstance(child, NavigableString):
-                tweet_text += str(child) + " "
+                tweet_text += child + " "
             elif isinstance(child, Tag):
                 try:
                     tag_class = child['class'][0]
                     if tag_class == "twitter-atreply":
-                        mention = ''.join([str(i.string) for i in child.contents])
+                        mention = ''.join([i.string for i in child.contents])
                         tweet_text += mention + " "
                     elif tag_class == "twitter-hashtag":
-                        hashtag = ''.join([str(i.string) for i in child.contents])
+                        hashtag = ''.join([i.string for i in child.contents])
                         tweet_text += hashtag + " "
                     elif tag_class == "twitter-timeline-link":
-                        tweet_text += child['href'] + " "
+                        if isinstance(child["href"], str):
+                            tweet_text += child["href"] + " "
                 except:
-                    tweet_text += str(child.string) + " "
+                    if isinstance(child.string, str):
+                        tweet_text += child.string + " "
         return " ".join(tweet_text.split())
