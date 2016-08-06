@@ -27,7 +27,7 @@ class AdvancedSearchScraper(object):
       Please play with the page https://twitter.com/search-advanced to learn
       how queries should be formed!
 
-      Note that the class will automatically take care of all other url parameters 
+      Note that the class will automatically take care of all other url parameters
       like "src" etc.
 
     - limit
@@ -37,6 +37,15 @@ class AdvancedSearchScraper(object):
     """
 
     def __init__(self, query, limit = 100):
+
+        # We could have used separate parameters like language, since, until
+        # Corresponding to each form element in the Advanced Search page.
+        # But this complicates the logic of the class.
+        # We would have to validate the parameters and this is messy.
+        # We would also have to form the query, which is messy too.
+        # We choose elegance instead, and leave the job of forming the
+        # correct query to the user.
+
         self.query = query
         if limit:
             self.limit = limit
