@@ -9,23 +9,52 @@ warnings.filterwarnings('ignore')
 
 class AdvancedSearchScraper(object):
 
-    def __init__(self, all_of_these_words, limit = 100):
-        self.all_of_these_words = all_of_these_words
+    """AdvancedSearchScraper(query, limit = 100)
+    This class scrapes tweets from the Twitter Advanced Search results page
+
+    Explanation of parameters:
+
+    - query
+
+      If you want to perform the search
+      https://twitter.com/search?q=python%20lang%3Aen%20since%3A2016-08-01%20&src=typd,
+      then you should use:
+
+      ass = AdvancedSearchScraper("python%20lang%3Aen%20since%3A2016-08-01%20")
+
+      Forming the correct query is your responsibility!!!
+
+      Please play with the page https://twitter.com/search-advanced to learn
+      how queries should be formed!
+
+      Note that the class will automatically take care of all other url parameters 
+      like "src" etc.
+
+    - limit
+
+      limit indicates the approximate number of tweets that should be scraped.
+      The default value is 100. Set it to None if you want to scrape all tweets.
+    """
+
+    def __init__(self, query, limit = 100):
+        self.query = query
         if limit:
             self.limit = limit
         else:
             self.limit = float("inf")
 
+
     def first_page_params(self):
-        query_dict = {"src" : "typd",
-                      "q" : self.all_of_these_words,
+        query_dict = {"q" : self.query,
+                      "src" : "typd",
                       "f" : "tweets",
                       }
+
         return query_dict
 
     def ajax_call_params(self, oldest_tweet_id, newest_tweet_id):
-        query_dict = {"src" : "typd",
-                      "q" : self.all_of_these_words,
+        query_dict = {"q" : self.query,
+                      "src" : "typd",
                       "f" : "tweets",
                       "include_available_features" : 1,
                       "include_entities" : 1,
