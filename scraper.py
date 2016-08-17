@@ -82,7 +82,7 @@ class AdvancedSearchScraper(object):
             newest_tweet_id = self.tweets[0]['tweet_id']
             oldest_tweet_id = self.tweets[-1]['tweet_id']
 
-            while len(self.tweets) < self.limit:
+            while len(self.tweets) <= self.limit:
 
                 # rate limiting! 1 AJAX call in 5 seconds.
 
@@ -103,6 +103,9 @@ class AdvancedSearchScraper(object):
                     break
 
                 oldest_tweet_id = self.tweets[-1]['tweet_id']
+
+        if isinstance(self.limit, int):
+            return self.tweets[:self.limit]
 
         return self.tweets
 
