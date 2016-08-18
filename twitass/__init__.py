@@ -1,1 +1,1 @@
-from scraper import AdvancedSearchScraper
+from .scraper import AdvancedSearchScraper
