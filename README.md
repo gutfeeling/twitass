@@ -1,52 +1,13 @@
 # twitass
-Scrapes tweets from the Twitter Advanced Search webpage - bypasses the 10 day limit of the public API
+Scrapes tweets from the Twitter Advanced Search webpage - bypasses the 7 day historical limit of the public API
 
-# How do I get set up? #
-
-## Clone the repo
-
-```
-git clone https://github.com/gutfeeling/twitass.git
-cd twitass
-```
-
-
-## Install dependencies
-
-### First the Python packages
-
-1. Create a virtualenv
-  - If you want to use python 2
-
-    ```  
-    virtualenv venv
-    ```
-  - If you want to use python 3
+# Installation 
 
     ```
-    virtualenv -p python3 venv
-    ```
-
-2. Activate the virtualenv
-
-  ```
-  source venv/bin/activate
-  ```
-
-3. Install the python modules
-
-  - If you want to use python 2
-
-    ```  
-    pip install -r requirements2.txt
-    ```
-  - If you want to use python 3
-
-    ```
-    pip install -r requirements3.txt
+    pip install -e git+https://github.com/gutfeeling/twitass#egg=twitass
     ```
   
-## Start scraping
+# How to scrape
 
 Here is a basic example which searches for the word "python" in the Twitter Advance Search webpage and 
 returns the first 200 tweets.  
