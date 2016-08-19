@@ -9,8 +9,7 @@ Scrapes tweets from the Twitter Advanced Search webpage - bypasses the 7 day his
   
 # How to scrape
 
-Here is a basic example which searches for the word "python" in the Twitter Advance Search webpage and 
-returns the first 200 tweets.  
+twitass exposes a super simple API for scraping tweets. Here is a basic example which searches for the word "python" in the Twitter Advance Search webpage and returns the first 200 tweets.  
 
   ```python
   >>> from scraper import AdvancedSearchScraper
