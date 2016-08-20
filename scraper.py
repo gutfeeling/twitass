@@ -101,6 +101,7 @@ class AdvancedSearchScraper(object):
                     verify = False, headers = headers)
                 json_data = json.loads(response.text)
                 self.tweets += self.get_tweets_from_html(json_data["items_html"])
+                print("Scraped {0} tweets so far...".format(len(self.tweets)))
 
                 if oldest_tweet_id == self.tweets[-1]["scroll_id"]:
                     break
