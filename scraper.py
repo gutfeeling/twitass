@@ -89,7 +89,7 @@ class AdvancedSearchScraper(object):
 
                 # rate limiting! 1 AJAX call in 5 seconds.
 
-                time.sleep(5)
+                time.sleep(1)
 
                 # if q is supplied in the params dictionary, requests replaces
                 # spaces by + . this results in an unexpected final url.
