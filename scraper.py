@@ -111,7 +111,7 @@ class AdvancedSearchScraper(object):
                 else:
                     self.tweets+=new_tweets
                     oldest_tweet_id = self.tweets[-1]['tweet_id']
-                    print("Scraped {0} tweets so far...\n".format(len(self.tweets)))
+                    print("Scraped {0} tweets so far...".format(len(self.tweets)))
 
         if isinstance(self.limit, int):
             return self.tweets[:self.limit]
