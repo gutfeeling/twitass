@@ -79,16 +79,11 @@ class AdvancedSearchScraper(object):
                                 verify = False, headers = headers)
         self.tweets+=self.get_tweets_from_html(response.text)
 
-        ajax_headers = {"user-agent" : "Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1)"
-                                       " Gecko/20100101 Firefox/7.7",
-                        "content-type" : "application/json, text/javascript, */*; q=0.01"
-                        }
-
         #ajax
         if len(self.tweets)>0:
 
-            newest_tweet_id = self.tweets[0]['tweet_id']
-            oldest_tweet_id = self.tweets[-1]['tweet_id']
+            newest_tweet_id = self.tweets[0]["scroll_id"]
+            oldest_tweet_id = self.tweets[-1]["scroll_id"]
 
             while len(self.tweets) <= self.limit:
 
@@ -103,15 +98,14 @@ class AdvancedSearchScraper(object):
                 response = requests.get(
                     "https://twitter.com/i/search/timeline?q=%s" % self.query,
                     params = self.ajax_call_params(oldest_tweet_id, newest_tweet_id),
-                    verify = False, headers = ajax_headers)
+                    verify = False, headers = headers)
                 json_data = json.loads(response.text)
-                new_tweets = self.get_tweets_from_html(json_data["items_html"])
-                if len(new_tweets) == 0:
+                self.tweets += self.get_tweets_from_html(json_data["items_html"])
+
+                if oldest_tweet_id == self.tweets[-1]["scroll_id"]:
                     break
-                else:
-                    self.tweets+=new_tweets
-                    oldest_tweet_id = self.tweets[-1]['tweet_id']
-                    print("Scraped {0} tweets so far...".format(len(self.tweets)))
+
+                oldest_tweet_id = self.tweets[-1]["scroll_id"]
 
         if isinstance(self.limit, int):
             return self.tweets[:self.limit]
@@ -128,30 +122,40 @@ class AdvancedSearchScraper(object):
         tweet_soup_list = html_soup.find_all("div", {"class" : "original-tweet"})
         for tweet_soup in tweet_soup_list:
             try:
-                tweet_dict = {
-                    "tweet_id" : int(tweet_soup["data-tweet-id"]),
-                    "author_name" : tweet_soup["data-name"],
-                    "author_handle" : tweet_soup["data-screen-name"],
-                    "author_id" : int(tweet_soup["data-user-id"]),
-                    "author_href" : tweet_soup.find("a",{"class" : "account-group"})["href"],
-                    "tweet_permalink" : tweet_soup["data-permalink-path"],
-                    "tweet_text" : self.prettify_tweet_text_bs_element(
-                                       tweet_soup.find("p", {"class" : "tweet-text"})),
-                    "tweet_language" : tweet_soup.find("p", {"class" : "tweet-text"})['lang'],
-                    "tweet_time" : tweet_soup.find("a",{"class" : "tweet-timestamp"})["title"],
-                    "tweet_timestamp" : tweet_soup.find(
-                        "span",{"class" : "_timestamp"})["data-time-ms"],
-                    "retweets" : int(tweet_soup.find(
-                        "span",{"class" : "ProfileTweet-action--retweet"}).find(
-                        "span", {"class" : "ProfileTweet-actionCount"})['data-tweet-stat-count']),
-                    "favorites" : int(tweet_soup.find(
-                        "span",{"class" : "ProfileTweet-action--favorite"}).find(
-                        "span", {"class" : "ProfileTweet-actionCount"})['data-tweet-stat-count']),
-                    }
-                tweetlist.append(tweet_dict)
+                tweet_dict = { "scroll_id" : int(tweet_soup["data-retweet-id"]) }
+            except:
+                tweet_dict = { "scroll_id" : int(tweet_soup["data-tweet-id"]) }
+            try:
+                tweet_dict["tweet_id"] = int(tweet_soup["data-tweet-id"])
+                tweet_dict["author_name"] = tweet_soup["data-name"]
+                tweet_dict["author_handle"] = tweet_soup["data-screen-name"]
+                tweet_dict["author_id"] = int(tweet_soup["data-user-id"])
+                tweet_dict["author_href"] = tweet_soup.find(
+                    "a",{"class" : "account-group"})["href"]
+                tweet_dict["tweet_permalink"] = tweet_soup["data-permalink-path"]
+                tweet_dict["tweet_text"] = self.prettify_tweet_text_bs_element(
+                    tweet_soup.find("p", {"class" : "tweet-text"}))
+                tweet_dict["tweet_language"] = tweet_soup.find(
+                    "p", {"class" : "tweet-text"})['lang']
+                tweet_dict["tweet_time"] = tweet_soup.find(
+                    "a",{"class" : "tweet-timestamp"})["title"]
+                tweet_dict["tweet_timestamp"] = tweet_soup.find(
+                    "span",{"class" : "_timestamp"})["data-time-ms"]
+                tweet_dict["retweets"] = int(tweet_soup.find(
+                    "span",{"class" : "ProfileTweet-action--retweet"}).find(
+                    "span", {"class" : "ProfileTweet-actionCount"})['data-tweet-stat-count'])
+                tweet_dict["favorites"] = int(tweet_soup.find(
+                    "span",{"class" : "ProfileTweet-action--favorite"}).find(
+                    "span", {"class" : "ProfileTweet-actionCount"})['data-tweet-stat-count'])
             except Exception as e:
-                print("Error while extracting information from tweet.\n")
+                print("Error while extracting information from tweet.")
                 print(e)
+            try:
+                tweet_dict["retweet_id"] = int(tweet_soup["data-retweet-id"])
+                tweet_dict["retweeter_handle"] = tweet_soup["data-retweeter"]
+            except:
+                pass
+            tweetlist.append(tweet_dict)
         return tweetlist
 
     def prettify_tweet_text_bs_element(self, tweet_text_bs_element):
