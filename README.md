@@ -3,9 +3,9 @@ Scrapes tweets from the Twitter Advanced Search webpage - bypasses the 7 day his
 
 # Installation 
 
- ```
- pip install -e git+https://github.com/gutfeeling/twitass#egg=twitass
- ```
+    ```
+    pip install -e git+https://github.com/gutfeeling/twitass#egg=twitass
+    ```
   
 # How to scrape
 
