@@ -36,7 +36,7 @@ class AdvancedSearchScraper(object):
       The default value is 100. Set it to None if you want to scrape all tweets.
     """
 
-    def __init__(self, query, limit = 100):
+    def __init__(self, query, limit = 100, verbose = False):
 
         # We could have used separate parameters like language, since, until
         # Corresponding to each form element in the Advanced Search page.
@@ -47,6 +47,7 @@ class AdvancedSearchScraper(object):
         # correct query to the user.
 
         self.query = query
+        self.verbose = verbose
         if limit:
             self.limit = limit
         else:
@@ -101,7 +102,9 @@ class AdvancedSearchScraper(object):
                     verify = False, headers = headers)
                 json_data = json.loads(response.text)
                 self.tweets += self.get_tweets_from_html(json_data["items_html"])
-                print("Scraped {0} tweets so far...".format(len(self.tweets)))
+
+                if self.verbose:
+                    print("Scraped {0} tweets so far...".format(len(self.tweets)))
 
                 if oldest_tweet_id == self.tweets[-1]["scroll_id"]:
                     break
