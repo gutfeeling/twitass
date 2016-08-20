@@ -71,9 +71,12 @@ class AdvancedSearchScraper(object):
         # if q is supplied in the params dictionary, requests replaces
         # spaces by + . this results in an unexpected final url.
         # this is the only way to form the correct url.
+        headers = {"user-agent" : "Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1)"
+                   " Gecko/20100101 Firefox/7.7"}
+
         response = requests.get("https://twitter.com/search?q=%s" % self.query,
                                 params = {"src" : "typd", "f" : "tweets"},
-                                verify = False)
+                                verify = False, headers = headers)
         self.tweets+=self.get_tweets_from_html(response.text)
 
         #ajax
@@ -95,7 +98,7 @@ class AdvancedSearchScraper(object):
                 response = requests.get(
                     "https://twitter.com/i/search/timeline?q=%s" % self.query,
                     params = self.ajax_call_params(oldest_tweet_id, newest_tweet_id),
-                    verify = False)
+                    verify = False, headers = headers)
                 json_data = json.loads(response.text)
                 self.tweets+=self.get_tweets_from_html(json_data["items_html"])
 
