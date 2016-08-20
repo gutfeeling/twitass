@@ -79,6 +79,11 @@ class AdvancedSearchScraper(object):
                                 verify = False, headers = headers)
         self.tweets+=self.get_tweets_from_html(response.text)
 
+        ajax_headers = {"user-agent" : "Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1)"
+                                       " Gecko/20100101 Firefox/7.7",
+                        "content-type" : "application/json, text/javascript, */*; q=0.01"
+                        }
+
         #ajax
         if len(self.tweets)>0:
 
@@ -98,14 +103,14 @@ class AdvancedSearchScraper(object):
                 response = requests.get(
                     "https://twitter.com/i/search/timeline?q=%s" % self.query,
                     params = self.ajax_call_params(oldest_tweet_id, newest_tweet_id),
-                    verify = False, headers = headers)
+                    verify = False, headers = ajax_headers)
                 json_data = json.loads(response.text)
-                self.tweets+=self.get_tweets_from_html(json_data["items_html"])
-
-                if oldest_tweet_id == self.tweets[-1]['tweet_id']:
+                new_tweets = self.get_tweets_from_html(json_data["items_html"])
+                if len(new_tweets) == 0:
                     break
-
-                oldest_tweet_id = self.tweets[-1]['tweet_id']
+                else:
+                    self.tweets+=new_tweets
+                    oldest_tweet_id = self.tweets[-1]['tweet_id']
 
         if isinstance(self.limit, int):
             return self.tweets[:self.limit]
